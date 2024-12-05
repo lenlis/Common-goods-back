@@ -3,8 +3,8 @@ const { WordController, AutorController, TextController } = require('../controll
 var router = express.Router();
 
 
-router.get('/word/:id', WordController.getWordById);
-router.get('/words/sirch', WordController.getWordsSirch);
+router.get('/words/:id', WordController.getWordById);
+router.get('/words/?', WordController.getWordsSirch);
 
 router.get('/autors', AutorController.getAllAutors);
 router.get('/autors/:wordId', AutorController.getAutorsByWord)
