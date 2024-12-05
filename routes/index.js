@@ -6,8 +6,8 @@ var router = express.Router();
 router.get('/words/:id', WordController.getWordById);
 router.get('/words/?', WordController.getWordsSirch);
 
-router.get('/autors', AutorController.getAllAutors);
-router.get('/autors/:wordId', AutorController.getAutorsByWord)
+router.get('/authors', AutorController.getAllAutors);
+router.get('/authors/:wordId', AutorController.getAutorsByWord)
 
 router.get('/texts', TextController.getAllTexts);
 router.get('/texts/word/:wordId', TextController.getTextsByWord);

@@ -10,7 +10,7 @@ const AutorController = {
 
             res.json(autors);
         } catch (err) {
-            res.status(500).json({ error: 'Ошибка получения слов' });
+            res.status(500).json({ error: 'Ошибка получения авторов' });
         }
     },
     getAutorsByWord: async (req, res) =>{
@@ -22,11 +22,11 @@ const AutorController = {
                 where:{ wordId },
             });
             if(!autors){
-                res.status(404).json({ error: ('Не найден автор по слову ' +  wordId)});
+                res.status(404).json({ error: ('Не найдены авторы по слову')});
             }
             res.json(autors);
         } catch (err) {
-            res.status(500).json({ error: 'Ошибка получения слов' });
+            res.status(500).json({ error: 'Ошибка получения авторов по слову' });
         }
     },
 
