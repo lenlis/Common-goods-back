@@ -6,7 +6,12 @@ const TextController = {
     getAllTexts: async (req, res) =>{
         try{
             
-            const texts = await prisma.text.findMany();
+            const texts = await prisma.text.findMany({
+                include:{
+                    word:true,
+                    author: true
+                }
+            });
 
             res.json(texts);
         } catch (err) {
@@ -14,15 +19,19 @@ const TextController = {
         }
     },
     getTextsByAutor: async (req, res) =>{
-        const { autorId } = req.params;
+        const { authorId } = req.params;
 
         try{
             
             const texts = await prisma.text.findMany({
-                where:{autorId},
+                where:{ authorId: {equals: authorId}},
+                include:{
+                    word:true,
+                    author: true
+                }
             });
             if(!texts){
-                res.status(404).json({ error: ('Не найден текст по автору ' +  autorId)});
+                res.status(404).json({ error: ('Не найден текст по автору ' +  authorId)});
             }
             res.json(texts);
         } catch (err) {
@@ -35,7 +44,11 @@ const TextController = {
         try{
             
             const texts = await prisma.text.findMany({
-                where:{ wordId },
+                where:{wordId:{ equals: wordId}},
+                include:{
+                    word:true,
+                    author: true
+                }
             });
             if(!texts){
                 res.status(404).json({ error: ('Не найден текст по слову ' +  wordId)});

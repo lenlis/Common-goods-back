@@ -3,14 +3,14 @@ const { WordController, AutorController, TextController } = require('../controll
 var router = express.Router();
 
 
-router.get('/words', WordController.getAllWords);
-router.get('/words/:letter', WordController.getWordsByLetter);
+router.get('/word/:id', WordController.getWordById);
+router.get('/words/sirch', WordController.getWordsSirch);
 
 router.get('/autors', AutorController.getAllAutors);
 router.get('/autors/:wordId', AutorController.getAutorsByWord)
 
 router.get('/texts', TextController.getAllTexts);
-router.get('/texts/:wordId', TextController.getTextsByWord);
-router.get('/texts/:autorId', TextController.getTextsByAutor);
+router.get('/texts/word/:wordId', TextController.getTextsByWord);
+router.get('/texts/author/:authorId', TextController.getTextsByAutor);
 
 module.exports = router;
