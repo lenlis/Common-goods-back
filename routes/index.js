@@ -4,13 +4,11 @@ var router = express.Router();
 
 
 router.get('/words/:id', WordController.getWordById);
-router.get('/words/?', WordController.getWordsSirch);
+router.get('/words/?', WordController.getWordsSearch); // lettter & word
 
 router.get('/authors', AutorController.getAllAutors);
 router.get('/authors/:wordId', AutorController.getAutorsByWord)
 
-router.get('/texts', TextController.getAllTexts);
-router.get('/texts/word/:wordId', TextController.getTextsByWord);
-router.get('/texts/author/:authorId', TextController.getTextsByAutor);
+router.get('/texts/?', TextController.getTextsSearch); // wordId & authorId
 
 module.exports = router;

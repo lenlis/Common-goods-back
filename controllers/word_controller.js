@@ -14,13 +14,13 @@ const WordController = {
                     letter: 'desc'
                 }
             });
-            res.json(words);
+            res.json(words[0]);
         } catch (err) {
             res.status(500).json({ error: "Ошибка поиска слова по id" });
         }
     },
 
-    getWordsSirch: async (req, res) =>{
+    getWordsSearch: async (req, res) =>{
         let words;
         let letter = req.query.letter;
         let word = req.query.word;
@@ -36,32 +36,34 @@ const WordController = {
             }
 
         
-            if(letter != undefined && word != undefined){
+            if((letter != undefined) && (word != undefined)){
                 words = await prisma.word.findMany({
                     where: {
-                        AND:
-                        [
-                            {
+                        
+                            OR:[
+                                {
+                                    wordRU:
+                                    {
+                                        contains: word, 
+                                        mode: 'insensitive'
+                                    },
+                                },
+                                {
+                                    wordEng:
+                                    {
+                                        contains: word, 
+                                        mode: 'insensitive'
+                                    },
+                                    
+                                }
+                            ],
+                            AND:{
                                 letter: 
                                 {
-                                    equals: letter
-                                }
+                                    equals: letter,
+                                    mode: 'insensitive'
+                                },
                             },
-                            {
-                                OR:[
-                                    {
-                                        wordRU:
-                                        {
-                                            contains: word
-                                        },
-                                        wordEng:
-                                        {
-                                            contains: word
-                                        }
-                                    }
-                                ]
-                            },
-                        ]
                     },
                     orderBy: {
                         letter: 'desc'
@@ -76,7 +78,8 @@ const WordController = {
                         {
                             letter: 
                             {
-                                equals: letter
+                                equals: letter,
+                                mode: 'insensitive'
                             }
                         },                        
                     });
@@ -89,13 +92,15 @@ const WordController = {
                                 {
                                     wordRU:
                                     {
-                                        contains: word
+                                        contains: word,
+                                        mode: 'insensitive'
                                     },
                                 },
                                 {
                                     wordEng:
                                     {
-                                        contains: word
+                                        contains: word,
+                                        mode: 'insensitive'
                                     }
                                 }
                                     
