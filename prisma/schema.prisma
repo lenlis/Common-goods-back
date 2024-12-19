@@ -18,6 +18,7 @@ model Autor {
   name      String
   photoUrl  String
   texts     Text[]
+  year      Int
 }
 
 model Word{
@@ -36,4 +37,5 @@ model Text{
   wordId    String    @db.ObjectId
   title     String
   text      String
+  pubYear   Int
 }
