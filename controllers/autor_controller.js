@@ -5,27 +5,27 @@ const { prisma } = require("../prisma/prisma-client");
 const AutorController = {
 
     getAutors: async (req, res) =>{
-        let wordId = req.query.wordId;
+        let textId = req.query.textId;
         let autors;
         try{
-            if(wordId == undefined){
+            if(textId == undefined){
                 autors = await prisma.autor.findMany();
             }
             else
             {
                 autors = await prisma.autor.findMany({
-                    where:{ wordId },
+                    where:{ texts:{ id: textId} },
                     orderBy: {
                         name: 'asc'
                     }
                 });
             }
             if(!autors){
-                res.status(404).json({ error: ('Не найдены авторы по слову')});
+                res.status(404).json({ error: ('Не найдены авторы по тексту')});
             }
             res.json(autors);
         } catch (err) {
-            res.status(500).json({ error: 'Ошибка получения авторов по слову' });
+            res.status(500).json({ error: 'Ошибка получения авторов по тексту' });
         }
     },
 
@@ -38,11 +38,11 @@ const AutorController = {
                 where:{ id },
             });
             if(!autor){
-                res.status(404).json({ error: ('Не найдены авторы по слову')});
+                res.status(404).json({ error: ('Не найдены авторы по id')});
             }
             res.json(autor);
         } catch (err) {
-            res.status(500).json({ error: 'Ошибка получения авторов по слову' });
+            res.status(500).json({ error: 'Ошибка получения авторов по id' });
         }
     },
 
