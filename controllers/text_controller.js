@@ -7,10 +7,11 @@ const TextController = {
     getTextsSearch: async (req, res) =>{
         let authorId = req.query.authorId;
         let wordId = req.query.wordId;
+        let textId = req.query.textId;
         let texts;
 
         try{
-            if(authorId == undefined && wordId == undefined){
+            if(authorId == undefined && wordId == undefined && textId == undefined){
                 texts = await prisma.text.findMany({
                     include:{
                         word:true,
@@ -29,11 +30,15 @@ const TextController = {
                     },
                     {
                         wordId:{equals: wordId},
+                    },
+                    {
+                        textId:{equals: textId},
                     }
                 ]},
                 include:{
                     word:true,
-                    author: true
+                    author: true,
+                    textId:true
                 }
             });
             if(!texts){

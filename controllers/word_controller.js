@@ -11,7 +11,7 @@ const WordController = {
             const words = await prisma.word.findMany({
                 where:{id},
                 orderBy: {
-                    letter: 'desc'
+                    letter: 'asc'
                 }
             });
             res.json(words[0]);
@@ -28,7 +28,7 @@ const WordController = {
             if(letter == undefined && word == undefined){
                 words = await prisma.word.findMany({
                     orderBy: {
-                        letter: 'desc'
+                        letter: 'asc'
                     }
                 });
                 res.json(words);
@@ -66,7 +66,7 @@ const WordController = {
                             },
                     },
                     orderBy: {
-                        letter: 'desc'
+                        letter: 'asc'
                     }
                     
                 });
@@ -107,7 +107,7 @@ const WordController = {
                             ]
                         },
                         orderBy: {
-                            letter: 'desc'
+                            letter: 'asc'
                         }
                         
                     });
