@@ -9,7 +9,7 @@ const AutorController = {
         let autors;
         try{
             if(textId == undefined){
-                autors = await prisma.autor.findMany();
+                autors = await prisma.autor.findMany({include:{texts:true}});
             }
             else
             {
@@ -17,7 +17,8 @@ const AutorController = {
                     where:{ texts:{ id: textId} },
                     orderBy: {
                         name: 'asc'
-                    }
+                    },
+                    include:{texts:true}
                 });
             }
             if(!autors){
@@ -36,6 +37,7 @@ const AutorController = {
             
             const autor = await prisma.autor.findUnique({
                 where:{ id },
+                include:{texts:true}
             });
             if(!autor){
                 res.status(404).json({ error: ('Не найдены авторы по id')});

@@ -6,7 +6,7 @@ var router = express.Router();
 router.get('/words/:id', WordController.getWordById);
 router.get('/words/?', WordController.getWordsSearch); // lettter & word
 
-router.get('/authors/?', AutorController.getAutors); //wordId
+router.get('/authors/?', AutorController.getAutors); //textId
 router.get('/authors/:id', AutorController.getAutorsById)
 
 router.get('/texts/?', TextController.getTextsSearch); // wordId & authorId

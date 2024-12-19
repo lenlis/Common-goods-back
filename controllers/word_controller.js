@@ -10,9 +10,7 @@ const WordController = {
             
             const word = await prisma.word.findUnique({
                 where:{id},
-                orderBy: {
-                    letter: 'asc'
-                }
+
             });
             res.json(word);
         } catch (err) {
