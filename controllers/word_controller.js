@@ -8,13 +8,13 @@ const WordController = {
         const { id }= req.params;
         try{
             
-            const words = await prisma.word.findMany({
+            const word = await prisma.word.findUnique({
                 where:{id},
                 orderBy: {
                     letter: 'asc'
                 }
             });
-            res.json(words[0]);
+            res.json(word);
         } catch (err) {
             res.status(500).json({ error: "Ошибка поиска слова по id" });
         }
