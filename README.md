@@ -1,1 +1,94 @@
 # Common-goods-back
+## Схема бд
+/// Модель Автора с полями {id; name; photoUrl; texts; year; biography;}
+model Author {
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  name      String    //ФИО
+  photoUrl  String?   //Ссылка на фото
+  // texts     ConnectionAuthorText[]
+  texts     Text[]
+  year      String?   //Годы жизни
+  biography String?   //Биография
+}
+
+/// Модель Слова с полями {id; wordRU; wordEng; letter; texts; meaningsRU; meaningsEN;}
+model Word{
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  wordRU      String    //Русский перевод
+  wordEng     String    //Английский перевод
+  letter      String    //Русская первая буква
+  texts       Text[]    //Тексты
+  meaningsRU  String[]  //определения на русском
+  meaningsEN  String[]  //Определения на английском
+}
+
+/// Модель Текста с полями {id; author; word; title; titleRU; description; rubric; pubYear; translator; originalLang; pubPlace; publisher; catalogNum; storage; size; type; texts;}
+model Text{
+  id           String     @id @default(auto()) @map("_id") @db.ObjectId
+  // authors      ConnectionAuthorText[]
+  author       Author?     @relation(fields: [authorId], references: [id])    //Автор
+  authorId     String?     @db.ObjectId                                   
+  word         Word?       @relation(fields: [wordId], references: [id])      //Слово, к которому текст
+  wordId       String?     @db.ObjectId
+  title        String       //Название
+  titleRU      String?      //Название в русском переводе
+  description  String?      //Описание
+  rubric       String?      //Рубрикатор
+  pubYear      String?      //Год публикации
+  // translators  ConnectionTranslatorText[]
+  translator   Translator? @relation(fields: [translatorId], references: [id])  //Переводчик
+  translatorId String?     @db.ObjectId
+  originalLang String?      //Язык оригинала
+  pubPlace     String?      //Место публикации
+  publisher    String?      //Издатель
+  catalogNum   String       //Номер по сводному каталогу
+  storage      String?      //Место хранения
+  size         String?      //Объем
+  type         String       //Тип
+  texts        Part[]       //Сам тексты или его отрывки
+}
+
+
+/// Модель Переводчика с полями {id; name; photoUrl; texts; year; biography;}
+model Translator {
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  name      String    //ФИО
+  photoUrl  String?   //Ссылка на фото
+  // texts     ConnectionTranslatorText[]
+  texts     Text[]
+  year      String?   //Годы жизни
+  biography String?   //Биография
+}
+
+// model ConnectionAuthorText{
+//   id           String    @id @default(auto()) @map("_id") @db.ObjectId
+//   author       Autor     @relation(fields: [authorId], references: [id])
+//   authorId     String    @db.ObjectId
+//   text         Text      @relation(fields: [textId], references: [id])
+//   textId       String    @db.ObjectId
+// }
+
+// model ConnectionTranslatorText{
+//   id           String       @id @default(auto()) @map("_id") @db.ObjectId
+//   translator   Translator   @relation(fields: [translatorId], references: [id])
+//   translatorId String       @db.ObjectId
+//   text         Text         @relation(fields: [textId], references: [id])
+//   textId       String       @db.ObjectId
+// }
+
+/// Модель Части Текста с полями {id; parentText; translations}
+model Part{
+  id            String    @id @default(auto()) @map("_id") @db.ObjectId
+  parentText    Text      @relation(fields: [parentTextId], references: [id])
+  parentTextId  String    @db.ObjectId
+  translations     Translation[]
+}
+
+/// Модель перевода части текста с полями {id; parentPart; language; text;}
+model Translation{
+  id            String    @id @default(auto()) @map("_id") @db.ObjectId
+  parentPart    Part      @relation(fields: [parentPartId], references: [id])
+  parentPartId  String    @db.ObjectId
+  language      String
+  text          String
+}
