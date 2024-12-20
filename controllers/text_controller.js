@@ -14,7 +14,13 @@ const TextController = {
                 texts = await prisma.text.findMany({
                     include:{
                         word:true,
-                        author: true
+                        author: true,
+                        translator: true,
+                        texts: {
+                            select:{
+                                translations: true
+                            }
+                        }
                     }
                 });
                 res.json(texts);
@@ -34,6 +40,13 @@ const TextController = {
                 include:{
                     word:true,
                     author: true,
+                    translator: true,
+                    texts: true,
+                    texts: {
+                        select:{
+                            translations: true
+                        }
+                    }
                 }
             });
             if(!texts){
@@ -54,6 +67,12 @@ const TextController = {
                 include:{
                     word:true,
                     author: true,
+                    translator: true,
+                    texts: {
+                        select:{
+                            translations: true
+                        }
+                    }
                 }
             });
             if(!text){
