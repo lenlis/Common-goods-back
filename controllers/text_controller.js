@@ -7,10 +7,11 @@ const TextController = {
     getTextsSearch: async (req, res) =>{
         let authorId = req.query.authorId;
         let wordId = req.query.wordId;
+        let word = req.query.wordId;
         let texts;
 
         try{
-            if(authorId == undefined && wordId == undefined){
+            if(authorId == undefined && wordId == undefined && word == undefined){
                 texts = await prisma.text.findMany({
                     include:{
                         word:true,
@@ -27,28 +28,66 @@ const TextController = {
                 return;
 
             }
-            
-            texts = await prisma.text.findMany({
-                where:{ OR:[
-                    {
-                        authorId: {equals: authorId},
-                    },
-                    {
-                        wordId:{equals: wordId},
-                    },
-                ]},
-                include:{
-                    word:true,
-                    author: true,
-                    translator: true,
-                    texts: true,
-                    texts: {
-                        select:{
-                            translations: true
+            if((authorId != undefined || wordId != undefined) && word == undefined){
+                texts = await prisma.text.findMany({
+                    where:{ OR:[
+                        {
+                            authorId: {equals: authorId},
+                        },
+                        {
+                            wordId:{equals: wordId},
+                        },
+                    ]},
+                    include:{
+                        word:true,
+                        author: true,
+                        translator: true,
+                        texts: true,
+                        texts: {
+                            select:{
+                                translations: true
+                            }
                         }
                     }
-                }
-            });
+                });
+            }
+            else{
+                texts = await prisma.text.findMany({
+                    where:{ OR:[
+                        {
+                            authorId: {equals: authorId},
+                        },
+                        {
+                            wordId:{equals: wordId},
+                        },
+                        {
+                            title:{
+                                contains: word, 
+                                mode: 'insensitive'
+                            }
+                        },
+                        {
+                            titleRU:{
+                                contains: word, 
+                                mode: 'insensitive'
+                            }
+                        }
+                        ],
+                    },
+                    include:{
+                        word:true,
+                        author: true,
+                        translator: true,
+                        texts: true,
+                        texts: {
+                            select:{
+                                translations: true
+                            }
+                        }
+                    }
+                });
+            }
+
             if(!texts){
                 res.status(404).json({ error: ('Не найден текст по автору')});
             }
@@ -78,7 +117,7 @@ const TextController = {
             if(!text){
                 res.status(404).json({ error: ('Не найден текст по id')});
             }
-            res.json(text);
+            res.json(text[0]);
         } catch (err) {
             res.status(500).json({ error: 'Ошибка получения текстов по автору' });
         }
