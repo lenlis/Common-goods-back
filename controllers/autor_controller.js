@@ -81,19 +81,22 @@ const AutorController = {
 
     getAutorsById: async (req, res) =>{
         const { id } = req.params;
-
+        let autor;
         try{
-            
-            const autor = await prisma.author.findUnique({
-                where:{ id },
-                include:{texts:true}
+            console.log(id)
+            autor = await prisma.author.findUnique({
+                where:{id},
+                include:{
+                    texts: true
+                }
             });
+            console.log(id)
             if(!autor){
                 res.status(404).json({ error: ('Не найдены авторы по id')});
             }
-            res.json(autor[0]);
+            res.json(autor);
         } catch (err) {
-            res.status(500).json({ error: 'Ошибка получения авторов по id' });
+            res.status(500).json({ error: err });
         }
     },
 

@@ -7,7 +7,7 @@ const TextController = {
     getTextsSearch: async (req, res) =>{
         let authorId = req.query.authorId;
         let wordId = req.query.wordId;
-        let word = req.query.wordId;
+        let word = req.query.word;
         let texts;
 
         try{
@@ -54,12 +54,6 @@ const TextController = {
             else{
                 texts = await prisma.text.findMany({
                     where:{ OR:[
-                        {
-                            authorId: {equals: authorId},
-                        },
-                        {
-                            wordId:{equals: wordId},
-                        },
                         {
                             title:{
                                 contains: word, 
@@ -117,7 +111,7 @@ const TextController = {
             if(!text){
                 res.status(404).json({ error: ('Не найден текст по id')});
             }
-            res.json(text[0]);
+            res.json(text);
         } catch (err) {
             res.status(500).json({ error: 'Ошибка получения текстов по автору' });
         }
