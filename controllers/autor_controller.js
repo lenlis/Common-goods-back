@@ -1,3 +1,4 @@
+const { Result } = require("express-validator");
 const { prisma } = require("../prisma/prisma-client");
 
 
@@ -100,6 +101,30 @@ const AutorController = {
         }
     },
 
+    createAutor: async () =>{
+        let {name, year, biography} = req.body;
+        let { image } = req.files;
+        let photoUrl = __dirname + '/../uploads/authorPlaceHolder.png';
+        try{
+        if(image != undefined){
+            const avatarName = `${name}.png`;
+            const avatarPath = path.join(__dirname, '/../uploads', avatarName);
+            fs.writeFileSync(avatarPath, image);
+        }
+        const author = prisma.author.create({
+            data: {
+              name,
+              photoUrl: `/uploads/${avatarName}`,
+              year,
+              biography, 
+            },
+          });
+        res.json(author);
+        } catch (error) {
+            console.error("Error createauthor:", error);
+            res.status(500).json({ error: "Internal server error" });
+        }
+    }
 };
 
 module.exports = AutorController;

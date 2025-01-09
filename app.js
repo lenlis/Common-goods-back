@@ -5,10 +5,14 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var fs = require('fs');
+const errorMiddleware = require('./middlewares/error-middleware');
 
 
 var app = express();
-app.use(cors())
+app.use(cors({
+  credentials: true,
+  origin: process.env.CLIENT_URL
+}));
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
@@ -18,6 +22,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(errorMiddleware);
 
 app.use('/', require('./routes'))
 
