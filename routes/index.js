@@ -12,6 +12,7 @@ router.get('/authors/:id', AutorController.getAutorsById)
 // router.post('/authors/', authMiddleware, AutorController.createAutor)
 router.post('/authors/', AutorController.createAutor)
 router.put('/authors/', AutorController.updateAutor)
+router.delete('/authors/', AutorController.deleteAutor)
 
 router.get('/texts/?', TextController.getTextsSearch); // (wordId & authorId) || word(навание текста)
 router.get('/texts/:id', TextController.getTextsbyId);
