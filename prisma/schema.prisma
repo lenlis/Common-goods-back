@@ -17,7 +17,7 @@ datasource db {
 model Author {
   id        String    @id @default(auto()) @map("_id") @db.ObjectId
   name      String    //ФИО
-  photoUrl  String?   //Ссылка на фото
+  photoUrl  String    @default("/images/authorPlaceHolder.png")//Ссылка на фото
   // texts     ConnectionAuthorText[]
   texts     Text[]
   year      String?   //Годы жизни
