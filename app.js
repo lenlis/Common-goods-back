@@ -10,11 +10,10 @@ const errorMiddleware = require('./middlewares/error-middleware');
 
 
 var app = express();
-// app.use(cors({
-//   credentials: true,
-//   origin: process.env.CLIENT_URL
-// }));
-app.use(cors({origin: '*'}));
+app.use(cors({
+  credentials: true,
+  origin: '*'
+}));
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
