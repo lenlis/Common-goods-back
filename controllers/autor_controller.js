@@ -116,24 +116,18 @@ const AutorController = {
         let photoUrl = __dirname + '/../uploads/authorPlaceHolder.png';
         let avatarName;
         try{
-            const tryAuthor = await prisma.author.findUnique({where: {name}});
-            console.log(tryAuthor)
-            if(tryAuthor != undefined){
-                res.status(400).json({error: `Автор с таким именем уже существует (${name})`});
-                return
-            }
 
             if(image){
                 // if (!/^image/.test(image.mimetype)) return res.status(400).json({ error: "Загружать можно только изображения до 10мб" });
                 avatarName = `${name}.png`;
-                photoUrl = path.join(__dirname, '/../uploads', avatarName);
-                image.mv(photoUrl);
+                photoUrl = `/uploads/${avatarName}`;
+                image.mv(path.join(__dirname, '/../uploads', avatarName));
             }
             // console.log(name);
             const author = await prisma.author.create({
                 data: {
                 name,
-                photoUrl: `/uploads/${avatarName}`,
+                photoUrl,
                 year,
                 biography, 
                 },
@@ -144,7 +138,53 @@ const AutorController = {
             console.error("Error createauthor:", error);
             res.status(500).json({ error: "Internal server error" });
         }
-    }
+    },
+
+    updateAutor: async (req, res) =>{
+        let id, name, year, biography, image;
+        id = req.body.id;
+        name = req.body.name;
+        year = req.body.year;
+        biography = req.body.biography;
+        const files = req.files;
+        if(files){
+            image = files.image
+        }
+        // console.log(image)
+        let avatarName;
+        try{
+            const tryAuthor = await prisma.author.findUnique({where: {id:id}});
+            photoUrl = tryAuthor.photoUrl;
+            if(image){
+                fs.unlink(path.join(__dirname,('/..' + tryAuthor.photoUrl)), (err) => {
+                    if (err) {
+                      console.error(err);
+                      reject(err);
+                    }});
+                // if (!/^image/.test(image.mimetype)) return res.status(400).json({ error: "Загружать можно только изображения до 10мб" });
+                avatarName = `${name}.png`;
+                photoUrl = `/uploads/${avatarName}`;
+                image.mv(path.join(__dirname, '/../uploads', avatarName));
+            }
+            // console.log(name);
+            const author = await prisma.author.update({
+                where:{
+                    id:id
+                },
+                data: {
+                name,
+                photoUrl,
+                year,
+                biography, 
+                },
+            });
+            // console.log(author);
+            res.json(author);
+        } catch (error) {
+            console.error("Error createauthor:", error);
+            res.status(500).json({ error: "Internal server error" });
+        }
+    },
 };
 
 module.exports = AutorController;
