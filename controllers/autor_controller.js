@@ -113,7 +113,7 @@ const AutorController = {
             image = files.image
         }
         console.log(image)
-        let photoUrl = __dirname + '/images/authorPlaceHolder.png';
+        let photoUrl = '/images/authorPlaceHolder.png';
         let avatarName;
         try{
 
