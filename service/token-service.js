@@ -47,7 +47,7 @@ class TokenService {
     }
 
     static async findToken(refreshToken) {
-        const tokenData = await prisma.token.findUnique({where: {refreshToken}});
+        const tokenData = await prisma.token.findFirst({where: {refreshToken}});
         return tokenData;
     }
 }

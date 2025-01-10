@@ -3,9 +3,9 @@ class UserDto {
     id;
     isActivated;
 
-    constructor() {
-        this.email = "model.email";
-        this.id = "model.id";
+    constructor(model) {
+        this.email = model.email;
+        this.id = model.id;
         this.isActivated = false;
     }
 }

@@ -51,10 +51,10 @@ class UserService {
             throw ApiError.BadRequest('Неверный пароль');
         }
         const userDto = new UserDto(user);
-        const tokens = TokenService.generateTokens({...user});
+        const tokens = TokenService.generateTokens({...userDto});
 
-        await TokenService.saveToken(user.id, tokens.refreshToken);
-        return {...tokens, user: user}
+        await TokenService.saveToken(userDto.id, tokens.refreshToken);
+        return {...tokens, user: userDto}
     }
 
     static async logout(refreshToken) {
