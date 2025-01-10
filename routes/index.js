@@ -9,7 +9,8 @@ router.get('/words/?', WordController.getWordsSearch); // lettter & word
 
 router.get('/authors/?', AutorController.getAutors); //textId
 router.get('/authors/:id', AutorController.getAutorsById)
-router.post('/authors/', authMiddleware, AutorController.createAutor)
+// router.post('/authors/', authMiddleware, AutorController.createAutor)
+router.post('/authors/', AutorController.createAutor)
 
 router.get('/texts/?', TextController.getTextsSearch); // (wordId & authorId) || word(навание текста)
 router.get('/texts/:id', TextController.getTextsbyId);
