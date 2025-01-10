@@ -1,5 +1,7 @@
 const { Result } = require("express-validator");
 const { prisma } = require("../prisma/prisma-client");
+const path = require("path");
+const fs = require('fs');
 
 
 
@@ -101,25 +103,43 @@ const AutorController = {
         }
     },
 
-    createAutor: async () =>{
-        let {name, year, biography} = req.body;
-        let { image } = req.files;
-        let photoUrl = __dirname + '/../uploads/authorPlaceHolder.png';
-        try{
-        if(image != undefined){
-            const avatarName = `${name}.png`;
-            const avatarPath = path.join(__dirname, '/../uploads', avatarName);
-            fs.writeFileSync(avatarPath, image);
+    createAutor: async (req, res) =>{
+        let name, year, biography, image;
+        name = req.body.name;
+        year = req.body.year;
+        biography = req.body.biography;
+        const files = req.files;
+        if(files){
+            image = files.image
         }
-        const author = prisma.author.create({
-            data: {
-              name,
-              photoUrl: `/uploads/${avatarName}`,
-              year,
-              biography, 
-            },
-          });
-        res.json(author);
+        console.log(image)
+        let photoUrl = __dirname + '/../uploads/authorPlaceHolder.png';
+        let avatarName;
+        try{
+            const tryAuthor = await prisma.author.findUnique({where: {name}});
+            console.log(tryAuthor)
+            if(tryAuthor != undefined){
+                res.status(400).json({error: `Автор с таким именем уже существует (${name})`});
+                return
+            }
+
+            if(image){
+                // if (!/^image/.test(image.mimetype)) return res.status(400).json({ error: "Загружать можно только изображения до 10мб" });
+                avatarName = `${name}.png`;
+                photoUrl = path.join(__dirname, '/../uploads', avatarName);
+                image.mv(photoUrl);
+            }
+            // console.log(name);
+            const author = await prisma.author.create({
+                data: {
+                name,
+                photoUrl: `/uploads/${avatarName}`,
+                year,
+                biography, 
+                },
+            });
+            // console.log(author);
+            res.json(author);
         } catch (error) {
             console.error("Error createauthor:", error);
             res.status(500).json({ error: "Internal server error" });

@@ -16,7 +16,7 @@ datasource db {
 /// Модель Автора с полями {id; name; photoUrl; texts; year; biography;}
 model Author {
   id        String    @id @default(auto()) @map("_id") @db.ObjectId
-  name      String    //ФИО
+  name      String    @unique //ФИО
   photoUrl  String?   //Ссылка на фото
   // texts     ConnectionAuthorText[]
   texts     Text[]

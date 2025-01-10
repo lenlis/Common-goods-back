@@ -17,4 +17,4 @@ class ApiError extends Error {
     }
 }
 
-module.exports = new ApiError();
+module.exports = ApiError;

@@ -1,10 +1,12 @@
 const {validationResult} = require('express-validator');
-const ApiError = require('../exceptions/api-error').default;
 const bcrypt = require('bcrypt');
 const uuid = require('uuid');
 const UserDto = require('../dtos/user-dto');
 const { sign, verify } = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
+const { prisma } = require("../prisma/prisma-client");
+const jwt = require('jsonwebtoken');
+const TokenService = require('../controllers/token-service');
 
 const UserController =  {
     registration:  async (req, res, next) => {
@@ -14,6 +16,7 @@ const UserController =  {
                 return next(ApiError.BadRequest('Ошибка при валидации', errors.array()))
             }
             const {email, password} = req.body;
+            console.log(email);
             const userData = await UserService.registration(email, password);
             res.cookie('refreshToken', userData.refreshToken, {maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true})
             return res.json(userData);
@@ -77,25 +80,28 @@ const UserController =  {
 
 const UserService = {
     registration: async  (email, password) => {
+        console.log(password);
+        console.log(email);
         const candidate = await prisma.user.findUnique({where: {email}});
-        if (candidate) {
+        console.log(candidate);
+        if (candidate != undefined) {
             throw ApiError.BadRequest(`Пользователь с почтовым адресом ${email} уже существует`);
         }
         const hashPassword = await bcrypt.hash(password, 3);
-        const activationLink = v4(); // v34fa-asfasf-142saf-sa-asf
-
-        const user = await prisma.user.create({data:{email, password: hashPassword, activationLink}});
+        const activLink = uuid.v4(); // v34fa-asfasf-142saf-sa-asf
+        const user = await prisma.user.create({
+            data:{
+                email, 
+                password: hashPassword, 
+                activLink
+            }
+        });
         let Mail = new MailService();
-        await Mail.sendActivationMail(email, `${process.env.API_URL}/activate/${activationLink}`);
+        // await Mail.sendActivationMail(email, `${process.env.API_URL}/activate/${activLink}`);
+        const tokens = TokenService.generateTokens({...user});
+        await TokenService.saveToken(user.id, tokens.refreshToken);
 
-        const userDto = new UserDto(); // id, email, isActivated
-        userDto.email = user.email;
-        userDto.id = user.id;
-        userDto.isActivated = user.isActivated;
-        const tokens = TokenService.generateTokens({...userDto});
-        await TokenService.saveToken(userDto.id, tokens.refreshToken);
-
-        return {...tokens, user: userDto}
+        return {...tokens, user}
     },
 
     activate: async (activationLink) => {
@@ -112,15 +118,15 @@ const UserService = {
         if (!user) {
             throw ApiError.BadRequest('Пользователь с таким email не найден');
         }
-        const isPassEquals = await compare(password, user.password);
+        const isPassEquals = await bcrypt.compare(password, user.password);
         if (!isPassEquals) {
             throw ApiError.BadRequest('Неверный пароль');
         }
         const userDto = new UserDto(user);
-        const tokens = TokenService.generateTokens({...userDto});
+        const tokens = TokenService.generateTokens({...user});
 
-        await TokenService.saveToken(userDto.id, tokens.refreshToken);
-        return {...tokens, user: userDto}
+        await TokenService.saveToken(user.id, tokens.refreshToken);
+        return {...tokens, user: user}
     },
 
     async logout(refreshToken) {
@@ -151,54 +157,56 @@ const UserService = {
     }
 }
 
-const TokenService = {
-    generateTokens(payload) {
-        const accessToken = sign(payload, process.env.JWT_ACCESS_SECRET, {expiresIn: '15s'});
-        const refreshToken = sign(payload, process.env.JWT_REFRESH_SECRET, {expiresIn: '30s'});
-        return {
-            accessToken,
-            refreshToken
-        }
-    },
+// const TokenService = {
+//     generateTokens(payload) {
+//         const accessToken = jwt.sign(payload, process.env.JWT_ACCESS_SECRET, {expiresIn: '15s'});
+//         const refreshToken = jwt.sign(payload, process.env.JWT_REFRESH_SECRET, {expiresIn: '30s'});
+//         return {
+//             accessToken,
+//             refreshToken
+//         }
+//     },
 
-    validateAccessToken(token) {
-        try {
-            const userData = verify(token, process.env.JWT_ACCESS_SECRET);
-            return userData;
-        } catch (e) {
-            return null;
-        }
-    },
+//     validateAccessToken(token) {
+//         try {
+//             const userData = jwt.verify(token, process.env.JWT_ACCESS_SECRET);
+//             return userData;
+//         } catch (e) {
+//             return null;
+//         }
+//     },
 
-    validateRefreshToken(token) {
-        try {
-            const userData = verify(token, process.env.JWT_REFRESH_SECRET);
-            return userData;
-        } catch (e) {
-            return null;
-        }
-    },
+//     validateRefreshToken(token) {
+//         try {
+//             const userData = jwt.verify(token, process.env.JWT_REFRESH_SECRET);
+//             return userData;
+//         } catch (e) {
+//             return null;
+//         }
+//     },
 
-    async saveToken(userId, refreshToken) {
-        const tokenData = await prisma.token.findUnique({where: {userId}});
-        if (tokenData) {
-            tokenData.refreshToken = refreshToken;
-            return tokenData.save();
-        }
-        const token = await prisma.token.create({data:{userId: userId, refreshToken}});
-        return token;
-    },
+//     async saveToken(userId, refreshToken) {
+//         let tokenData = await prisma.token.findUnique({where: {userId}});
+//         if (tokenData) {
 
-    async removeToken(refreshToken) {
-        const tokenData = await prisma.token.delete({where:{refreshToken}});
-        return tokenData;
-    },
+//             tokenData= await prisma.token.update({where:{id:tokenData.id},data:{refreshToken: refreshToken}});
+//             return tokenData;
+//         }
+//         const token = await prisma.token.create({data:{userId: userId, refreshToken}});
+//         return token;
+//     },
 
-    async findToken(refreshToken) {
-        const tokenData = await prisma.token.findUnique({where: {refreshToken}});
-        return tokenData;
-    }
-}
+//     async removeToken(refreshToken) {
+//         let tokenData = await prisma.token.findFirst({where:{refreshToken}});
+//         tokenData = await prisma.token.delete({where:{id:tokenData.id}});
+//         return tokenData;
+//     },
+
+//     async findToken(refreshToken) {
+//         const tokenData = await prisma.token.findUnique({where: {refreshToken}});
+//         return tokenData;
+//     }
+// }
 
 class MailService {
 
@@ -228,6 +236,25 @@ class MailService {
                     </div>
                 `
         })
+    }
+}
+
+class ApiError extends Error {
+    status;
+    errors;
+
+    constructor(status, message, errors = []) {
+        super(message);
+        this.status = status;
+        this.errors = errors;
+    }
+
+    static UnauthorizedError() {
+        return new ApiError(401, 'Пользователь не авторизован');
+    }
+
+    static BadRequest(message, errors = []) {
+        return new ApiError(400, message, errors);
     }
 }
 
