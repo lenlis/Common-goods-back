@@ -97,7 +97,7 @@ const UserService = {
             }
         });
         let Mail = new MailService();
-        // await Mail.sendActivationMail(email, `${process.env.API_URL}/activate/${activLink}`);
+        await Mail.sendActivationMail(email, `${process.env.API_URL}/activate/${activLink}`);
         const tokens = TokenService.generateTokens({...user});
         await TokenService.saveToken(user.id, tokens.refreshToken);
 

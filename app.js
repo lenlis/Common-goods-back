@@ -29,6 +29,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use(errorMiddleware);
 
 app.use('/', require('./routes'))
@@ -38,9 +39,12 @@ app.use(function(req, res, next) {
   next(createError(404));
 });
 
+
+
 if (!fs.existsSync("uploads")) {
   fs.mkdirSync("uploads");
 }
+
 
 // error handler
 app.use(function(err, req, res, next) {

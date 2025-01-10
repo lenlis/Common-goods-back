@@ -159,7 +159,6 @@ const AutorController = {
                 fs.unlink(path.join(__dirname,('/..' + tryAuthor.photoUrl)), (err) => {
                     if (err) {
                       console.error(err);
-                      reject(err);
                     }});
                 // if (!/^image/.test(image.mimetype)) return res.status(400).json({ error: "Загружать можно только изображения до 10мб" });
                 avatarName = `${name}.png`;
@@ -178,6 +177,19 @@ const AutorController = {
                 biography, 
                 },
             });
+            // console.log(author);
+            res.json(author);
+        } catch (error) {
+            console.error("Error createauthor:", error);
+            res.status(500).json({ error: "Internal server error" });
+        }
+    },
+
+    deleteAutor: async (req, res) =>{
+        let id;
+        id = req.body.id;
+        try{
+            const author = await prisma.author.delete({where:{id:id},});
             // console.log(author);
             res.json(author);
         } catch (error) {
