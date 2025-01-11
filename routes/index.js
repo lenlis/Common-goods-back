@@ -3,14 +3,15 @@ const { WordController, AutorController, TextController, UserController } = requ
 var router = express.Router();
 const {body} = require('express-validator');
 const authMiddleware = require('../middlewares/auth-middleware')
+const adminMiddleware = require('../middlewares/admin-middleware')
 
 router.get('/words/:id', WordController.getWordById);
 router.get('/words/?', WordController.getWordsSearch); // lettter & word
 
 router.get('/authors/?', AutorController.getAutors); //textId
 router.get('/authors/:id', AutorController.getAutorsById)
-// router.post('/authors/', authMiddleware, AutorController.createAutor)
-router.post('/authors/', AutorController.createAutor)
+router.post('/authors/', authMiddleware, adminMiddleware, AutorController.createAutor)
+// router.post('/authors/', AutorController.createAutor)
 router.put('/authors/', AutorController.updateAutor)
 router.delete('/authors/', AutorController.deleteAutor)
 
@@ -27,6 +28,6 @@ router.post('/logout', UserController.logout);
 
 router.get('/activate/:link', UserController.activate);
 router.get('/refresh', UserController.refresh);
-router.get('/users', authMiddleware, UserController.getUsers);
+router.get('/users', authMiddleware, adminMiddleware, UserController.getUsers);
 
 module.exports = router;

@@ -112,6 +112,7 @@ model User{
   password      String
   isActivated   Boolean   @default(false)
   activLink     String
+  adminFlag     Boolean   @default(false)
   token         Token?
 }
 

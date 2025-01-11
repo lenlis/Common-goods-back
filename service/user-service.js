@@ -74,7 +74,7 @@ class UserService {
         const user = await prisma.user.findUnique({where: {id: userData.id}});
         const userDto = new UserDto(user);
         const tokens = TokenService.generateTokens({...userDto});
-
+        console.log(userDto.id);
         await TokenService.saveToken(userDto.id, tokens.refreshToken);
         return {...tokens, user: userDto}
     }
@@ -83,6 +83,12 @@ class UserService {
         const users = await prisma.user.findMany({});
         return users;
     }
+
+    static async getUser(id){
+        const user = await prisma.user.findUnique({where:{id}});
+        return user;
+    }
+
 }
 
 module.exports = UserService;

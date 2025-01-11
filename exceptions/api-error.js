@@ -12,6 +12,10 @@ class ApiError extends Error {
         return new ApiError(401, 'Пользователь не авторизован');
     }
 
+    static UnAdminError() {
+        return new ApiError(401, 'Пользователь не имеет прав администратора');
+    }
+
     static BadRequest(message, errors = []) {
         return new ApiError(400, message, errors);
     }
