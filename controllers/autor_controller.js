@@ -5,9 +5,9 @@ const fs = require('fs');
 
 
 
-const AutorController = {
+const AuthorController = {
 
-    getAutors: async (req, res) =>{
+    getAuthors: async (req, res) =>{
         let textId = req.query.textId;
         let word = req.query.word;
         let autors;
@@ -82,7 +82,7 @@ const AutorController = {
         }
     },
 
-    getAutorsById: async (req, res) =>{
+    getAuthorsById: async (req, res) =>{
         const { id } = req.params;
         let autor;
         try{
@@ -103,7 +103,7 @@ const AutorController = {
         }
     },
 
-    createAutor: async (req, res) =>{
+    createAuthor: async (req, res) =>{
         let name, year, biography, image;
         name = req.body.name;
         year = req.body.year;
@@ -140,7 +140,7 @@ const AutorController = {
         }
     },
 
-    updateAutor: async (req, res) =>{
+    updateAuthor: async (req, res) =>{
         let id, name, year, biography, image;
         id = req.body.id;
         name = req.body.name;
@@ -185,7 +185,7 @@ const AutorController = {
         }
     },
 
-    deleteAutor: async (req, res) =>{
+    deleteAuthor: async (req, res) =>{
         let id;
         id = req.body.id;
         try{
@@ -199,4 +199,4 @@ const AutorController = {
     },
 };
 
-module.exports = AutorController;
+module.exports = AuthorController;
