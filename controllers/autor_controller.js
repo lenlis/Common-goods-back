@@ -135,7 +135,7 @@ const AuthorController = {
             // console.log(author);
             res.json(author);
         } catch (error) {
-            console.error("Error createauthor:", error);
+            console.error("Error create author:", error);
             res.status(500).json({ error: "Internal server error" });
         }
     },
@@ -180,7 +180,7 @@ const AuthorController = {
             // console.log(author);
             res.json(author);
         } catch (error) {
-            console.error("Error createauthor:", error);
+            console.error("Error update author:", error);
             res.status(500).json({ error: "Internal server error" });
         }
     },
@@ -193,7 +193,7 @@ const AuthorController = {
             // console.log(author);
             res.json(author);
         } catch (error) {
-            console.error("Error createauthor:", error);
+            console.error("Error delete author:", error);
             res.status(500).json({ error: "Internal server error" });
         }
     },

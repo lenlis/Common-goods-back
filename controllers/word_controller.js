@@ -122,6 +122,77 @@ const WordController = {
             res.status(500).json({ error: 'Ошибка получения слов по букве' });
         }
     },
+
+    createWord: async (req, res) =>{
+        let wordRU, wordEng, meaningsRU, meaningsEN, letter;
+        wordRU = req.body.wordRU.trim();
+        wordEng = req.body.wordEng.trim();
+        meaningsRU = req.body.meaningsRU.split(";");
+        meaningsEN = req.body.meaningsEN.split(";");
+        letter = wordRU[0].toLowerCase();
+        try{
+            const tryWord = await prisma.word.findFirst({where:{wordRU}});
+            if(tryWord){
+                res.status(500).json({ error: "Такое слово уже существует" });
+                return
+            }
+            const word = await prisma.word.create({
+                data: {
+                letter,
+                wordRU,
+                wordEng,
+                meaningsRU, 
+                meaningsEN
+                },
+            });
+            res.json(word);
+        } catch (error) {
+            console.error("Error create word:", error);
+            res.status(500).json({ error: "Internal server error" });
+        }
+    },
+
+    updateWord: async (req, res) =>{
+        let id, wordRU, wordEng, meaningsRU, meaningsEN, letter;
+        id = req.body.id;
+        wordRU = req.body.wordRU.trim();
+        wordEng = req.body.wordEng.trim();
+        meaningsRU = req.body.meaningsRU.split(";");
+        meaningsEN = req.body.meaningsEN.split(";");
+        letter = wordRU[0].toLowerCase();
+        try{
+            
+            const word = await prisma.word.update({
+                where:{
+                    id:id
+                },
+                data: {
+                letter,
+                wordRU,
+                wordEng,
+                meaningsRU,
+                meaningsEN 
+                },
+            });
+
+            res.json(word);
+        } catch (error) {
+            console.error("Error update word:", error);
+            res.status(500).json({ error: "Internal server error" });
+        }
+    },
+
+    deleteWord: async (req, res) =>{
+        let id;
+        id = req.body.id;
+        try{
+            const word = await prisma.word.delete({where:{id:id},});
+            res.json(word);
+        } catch (error) {
+            console.error("Error delete word:", error);
+            res.status(500).json({ error: "Internal server error" });
+        }
+    },
 };
 
 module.exports = WordController;

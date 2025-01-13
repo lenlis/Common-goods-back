@@ -7,6 +7,10 @@ const adminMiddleware = require('../middlewares/admin-middleware')
 
 router.get('/words/:id', WordController.getWordById);
 router.get('/words/?', WordController.getWordsSearch); // lettter & word
+router.post('/words/', authMiddleware, adminMiddleware, WordController.createWord)
+// router.post('/words/', AutorController.createAutor)
+router.put('/words/', authMiddleware, adminMiddleware, WordController.updateWord)
+router.delete('/words/', authMiddleware, adminMiddleware, WordController.deleteWord)
 
 router.get('/authors/?', AuthorController.getAuthors); //textId
 router.get('/authors/:id', AuthorController.getAuthorsById)
