@@ -127,8 +127,8 @@ const WordController = {
         let wordRU, wordEng, meaningsRU, meaningsEN, letter;
         wordRU = req.body.wordRU.trim();
         wordEng = req.body.wordEng.trim();
-        meaningsRU = req.body.meaningsRU.split(";");
-        meaningsEN = req.body.meaningsEN.split(";");
+        meaningsRU = req.body.meaningsRU;
+        meaningsEN = req.body.meaningsEN;
         letter = wordRU[0].toLowerCase();
         try{
             const tryWord = await prisma.word.findFirst({where:{wordRU}});
@@ -157,8 +157,8 @@ const WordController = {
         id = req.body.id;
         wordRU = req.body.wordRU.trim();
         wordEng = req.body.wordEng.trim();
-        meaningsRU = req.body.meaningsRU.split(";");
-        meaningsEN = req.body.meaningsEN.split(";");
+        meaningsRU = req.body.meaningsRU;
+        meaningsEN = req.body.meaningsEN;
         letter = wordRU[0].toLowerCase();
         try{
             
