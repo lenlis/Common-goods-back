@@ -12,7 +12,7 @@ const errorMiddleware = require('./middlewares/error-middleware');
 var app = express();
 app.use(cors({
   credentials: true,
-  origin: process.env.CLIENT_URL
+  origin: "http://localhost:5173"
 }));
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
