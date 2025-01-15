@@ -1,4 +1,5 @@
 const { prisma } = require("../prisma/prisma-client");
+const WordService = require('../service/word-service')
 
 
 
@@ -131,20 +132,8 @@ const WordController = {
         meaningsEN = req.body.meaningsEN;
         letter = wordRU[0].toLowerCase();
         try{
-            const tryWord = await prisma.word.findFirst({where:{wordRU}});
-            if(tryWord){
-                res.status(500).json({ error: "Такое слово уже существует" });
-                return
-            }
-            const word = await prisma.word.create({
-                data: {
-                letter,
-                wordRU,
-                wordEng,
-                meaningsRU, 
-                meaningsEN
-                },
-            });
+            let word = await WordService.createWord(letter, wordRU, wordEng, meaningsRU, meaningsEN);
+
             res.json(word);
         } catch (error) {
             console.error("Error create word:", error);
@@ -196,3 +185,6 @@ const WordController = {
 };
 
 module.exports = WordController;
+
+
+

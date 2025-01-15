@@ -1,9 +1,7 @@
-const { Result } = require("express-validator");
 const { prisma } = require("../prisma/prisma-client");
 const path = require("path");
 const fs = require('fs');
-
-
+const AuthorService = require('../service/author_service')
 
 const AuthorController = {
 
@@ -117,21 +115,8 @@ const AuthorController = {
         let avatarName;
         try{
 
-            if(image){
-                // if (!/^image/.test(image.mimetype)) return res.status(400).json({ error: "Загружать можно только изображения до 10мб" });
-                avatarName = `${name}.png`;
-                photoUrl = `/uploads/${avatarName}`;
-                image.mv(path.join(__dirname, '/../uploads', avatarName));
-            }
-            // console.log(name);
-            const author = await prisma.author.create({
-                data: {
-                name,
-                photoUrl,
-                year,
-                biography, 
-                },
-            });
+            let author;
+            author = await AuthorService.createAuthorFunc(image, avatarName, name, photoUrl, year, biography);
             // console.log(author);
             res.json(author);
         } catch (error) {
@@ -152,14 +137,15 @@ const AuthorController = {
         }
         // console.log(image)
         let avatarName;
-        try{
-            const tryAuthor = await prisma.author.findUnique({where: {id:id}});
+        try {
+            const tryAuthor = await prisma.author.findUnique({ where: { id: id } });
             photoUrl = tryAuthor.photoUrl;
-            if(image){
-                fs.unlink(path.join(__dirname,('/..' + tryAuthor.photoUrl)), (err) => {
+            if (image) {
+                fs.unlink(path.join(__dirname, ('/..' + tryAuthor.photoUrl)), (err) => {
                     if (err) {
-                      console.error(err);
-                    }});
+                        console.error(err);
+                    }
+                });
                 // if (!/^image/.test(image.mimetype)) return res.status(400).json({ error: "Загружать можно только изображения до 10мб" });
                 avatarName = `${name}.png`;
                 photoUrl = `/uploads/${avatarName}`;
@@ -167,14 +153,14 @@ const AuthorController = {
             }
             // console.log(name);
             const author = await prisma.author.update({
-                where:{
-                    id:id
+                where: {
+                    id: id
                 },
                 data: {
-                name,
-                photoUrl,
-                year,
-                biography, 
+                    name,
+                    photoUrl,
+                    year,
+                    biography,
                 },
             });
             // console.log(author);
@@ -200,3 +186,22 @@ const AuthorController = {
 };
 
 module.exports = AuthorController;
+
+// async function createAuthorFunc(image, avatarName, name, photoUrl, year, biography) {
+//     if (image) {
+//         // if (!/^image/.test(image.mimetype)) return res.status(400).json({ error: "Загружать можно только изображения до 10мб" });
+//         avatarName = `${name}.png`;
+//         photoUrl = `/uploads/${avatarName}`;
+//         image.mv(path.join(__dirname, '/../uploads', avatarName));
+//     }
+//     // console.log(name);
+//     const author = await prisma.author.create({
+//         data: {
+//             name,
+//             photoUrl,
+//             year,
+//             biography,
+//         },
+//     });
+//     return { author, avatarName, photoUrl };
+// }

@@ -30,27 +30,26 @@ model Word{
   wordRU      String    //Русский перевод
   wordEng     String    //Английский перевод
   letter      String    //Русская первая буква
-  texts       Text[]    //Тексты
+  texts       ConnectionWordrText[]    //Тексты
   meaningsRU  String[]  //определения на русском
   meaningsEN  String[]  //Определения на английском
 }
 
 /// Модель Текста с полями {id; author; word; title; titleRU; description; rubric; pubYear; translator; originalLang; pubPlace; publisher; catalogNum; storage; size; type; texts;}
 model Text{
-  id           String     @id @default(auto()) @map("_id") @db.ObjectId
+  id           String       @id @default(auto()) @map("_id") @db.ObjectId
   // authors      ConnectionAuthorText[]
-  author       Author?     @relation(fields: [authorId], references: [id])    //Автор
-  authorId     String?     @db.ObjectId                                   
-  word         Word?       @relation(fields: [wordId], references: [id])      //Слово, к которому текст
-  wordId       String?     @db.ObjectId
+  author       Author?      @relation(fields: [authorId], references: [id])    //Автор
+  authorId     String?      @db.ObjectId                                   
+  word         ConnectionWordrText[]    //Слово, к которому текст
   title        String       //Название
   titleRU      String?      //Название в русском переводе
   description  String?      //Описание
   rubric       String?      //Рубрикатор
   pubYear      String?      //Год публикации
   // translators  ConnectionTranslatorText[]
-  translator   Translator? @relation(fields: [translatorId], references: [id])  //Переводчик
-  translatorId String?     @db.ObjectId
+  translator   Translator?  @relation(fields: [translatorId], references: [id])  //Переводчик
+  translatorId String?      @db.ObjectId
   originalLang String?      //Язык оригинала
   pubPlace     String?      //Место публикации
   publisher    String?      //Издатель
@@ -61,6 +60,13 @@ model Text{
   texts        Part[]       //Сам тексты или его отрывки
 }
 
+model ConnectionWordrText{
+  id           String    @id @default(auto()) @map("_id") @db.ObjectId
+  word         Word      @relation(fields: [wordId], references: [id])
+  wordId       String    @db.ObjectId
+  text         Text      @relation(fields: [textId], references: [id])
+  textId       String    @db.ObjectId
+}
 
 /// Модель Переводчика с полями {id; name; photoUrl; texts; year; biography;}
 model Translator {

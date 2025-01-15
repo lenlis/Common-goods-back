@@ -14,7 +14,11 @@ const TextController = {
             if(authorId == undefined && wordId == undefined && word == undefined){
                 texts = await prisma.text.findMany({
                     include:{
-                        word:true,
+                        word:{
+                            select:{
+                                word: true
+                            }
+                        },
                         author: true,
                         translator: true,
                         texts: {
@@ -35,14 +39,21 @@ const TextController = {
                             authorId: {equals: authorId},
                         },
                         {
-                            wordId:{equals: wordId},
+                            word:{
+                                some:{
+                                    wordId:{equals:wordId},
+                                }
+                            }
                         },
                     ]},
                     include:{
-                        word:true,
+                        word:{
+                            select:{
+                                word: true
+                            }
+                        },
                         author: true,
                         translator: true,
-                        texts: true,
                         texts: {
                             select:{
                                 translations: true
@@ -69,10 +80,13 @@ const TextController = {
                         ],
                     },
                     include:{
-                        word:true,
+                        word:{
+                            select:{
+                                word: true
+                            }
+                        },
                         author: true,
                         translator: true,
-                        texts: true,
                         texts: {
                             select:{
                                 translations: true
@@ -87,7 +101,7 @@ const TextController = {
             }
             res.json(texts);
         } catch (err) {
-            res.status(500).json({ error: 'Ошибка получения текстов по автору' });
+            res.status(500).json({ error: err });
         }
     },
 
@@ -98,7 +112,11 @@ const TextController = {
             text = await prisma.text.findUnique({
                 where:{id},
                 include:{
-                    word:true,
+                    word:{
+                        select:{
+                            word: true
+                        }
+                    },
                     author: true,
                     translator: true,
                     texts: {
@@ -117,7 +135,54 @@ const TextController = {
         }
     },
     
+    createText: async (req, res) =>{
+        let name, year, biography, image, authorId, photoUrl, avatarName, author;
+        let wordRU, wordEng, meaningsRU, meaningsEN, letter, wordId, word;
+
+        try{
+            if(!("authorId" in req.body)){
+                name = req.body.name;
+                year = req.body.year;
+                biography = req.body.biography;
+                const files = req.files;
+                if(files){
+                    image = files.image
+                }
+                photoUrl = '/images/authorPlaceHolder.png';
+                author = await AuthorService.createAuthorFunc(image, avatarName, name, photoUrl, year, biography);
+                authorId = author.authorId;
+            }
+            else{
+                authorId = req.body.authorId;
+            }
+
+            if(!("wordId" in req.body)){
+                wordRU = req.body.wordRU.trim();
+                wordEng = req.body.wordEng.trim();
+                meaningsRU = req.body.meaningsRU;
+                meaningsEN = req.body.meaningsEN;
+                letter = wordRU[0].toLowerCase();
+                word = await WordService.createWord(letter, wordRU, wordEng, meaningsRU, meaningsEN);
+                wordId = word.wordId;
+            }
+            else
+            {
+                wordId = req.body.wordId;
+            }
+
+            
+            
+            
+
+
+            res.json(text);
+        } catch (err) {
+            res.status(500).json({ error: 'Ошибка получения текстов по автору' });
+        }
+    }
 
 };
 
 module.exports = TextController;
+
+
