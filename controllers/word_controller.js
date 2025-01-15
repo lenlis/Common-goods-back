@@ -125,14 +125,15 @@ const WordController = {
     },
 
     createWord: async (req, res) =>{
-        let wordRU, wordEng, meaningsRU, meaningsEN, letter;
+        let wordRU, wordEng, meaningsRU, meaningsEN, letter, forms;
         wordRU = req.body.wordRU.trim();
         wordEng = req.body.wordEng.trim();
         meaningsRU = req.body.meaningsRU;
         meaningsEN = req.body.meaningsEN;
         letter = wordRU[0].toLowerCase();
+        forms = req.body.forms;
         try{
-            let word = await WordService.createWord(letter, wordRU, wordEng, meaningsRU, meaningsEN);
+            let word = await WordService.createWord(letter, wordRU, wordEng, meaningsRU, meaningsEN, forms);
 
             res.json(word);
         } catch (error) {
@@ -142,13 +143,14 @@ const WordController = {
     },
 
     updateWord: async (req, res) =>{
-        let id, wordRU, wordEng, meaningsRU, meaningsEN, letter;
+        let id, wordRU, wordEng, meaningsRU, meaningsEN, letter, forms;
         id = req.body.id;
         wordRU = req.body.wordRU.trim();
         wordEng = req.body.wordEng.trim();
         meaningsRU = req.body.meaningsRU;
         meaningsEN = req.body.meaningsEN;
         letter = wordRU[0].toLowerCase();
+        forms = req.body.forms;
         try{
             
             const word = await prisma.word.update({
@@ -160,7 +162,8 @@ const WordController = {
                 wordRU,
                 wordEng,
                 meaningsRU,
-                meaningsEN 
+                meaningsEN, 
+                forms 
                 },
             });
 

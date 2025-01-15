@@ -1,7 +1,7 @@
 const { prisma } = require("../prisma/prisma-client");
 
 class WordService {
-    static async createWord(letter, wordRU, wordEng, meaningsRU, meaningsEN){
+    static async createWord(letter, wordRU, wordEng, meaningsRU, meaningsEN, forms){
         const tryWord = await prisma.word.findFirst({ where: { wordRU } });
         if (tryWord) {
             res.status(500).json({ error: "Такое слово уже существует" });
@@ -13,7 +13,8 @@ class WordService {
                 wordRU,
                 wordEng,
                 meaningsRU,
-                meaningsEN
+                meaningsEN, 
+                forms
             },
         });
         return(word);
