@@ -18,10 +18,11 @@ model Author {
   id        String    @id @default(auto()) @map("_id") @db.ObjectId
   name      String    //ФИО
   photoUrl  String    @default("/images/authorPlaceHolder.png")//Ссылка на фото
-  // texts     ConnectionAuthorText[]
-  texts     Text[]
+  translations     ConnectionAuthorText[] // тексты, которые переводил автор
+  texts     Text[]  //тексты, которые автор писал
   year      String?   //Годы жизни
   biography String?   //Биография
+  translationConnections Translation[] // связь с переводами
 }
 
 /// Модель Слова с полями {id; wordRU; wordEng; letter; texts; meaningsRU; meaningsEN;}
@@ -30,7 +31,7 @@ model Word{
   wordRU      String    //Русский перевод
   wordEng     String    //Английский перевод
   letter      String    //Русская первая буква
-  texts       ConnectionWordrText[]    //Тексты
+  texts       ConnectionWordText[]    //Тексты
   meaningsRU  String[]  //определения на русском
   meaningsEN  String[]  //Определения на английском
   forms       String[]  //Формы слова
@@ -42,15 +43,13 @@ model Text{
   // authors      ConnectionAuthorText[]
   author       Author?      @relation(fields: [authorId], references: [id])    //Автор
   authorId     String?      @db.ObjectId                                   
-  word         ConnectionWordrText[]    //Слово, к которому текст
+  word         ConnectionWordText[]    //Слово, к которому текст
   title        String       //Название
   titleRU      String?      //Название в русском переводе
   description  String?      //Описание
   rubric       String?      //Рубрикатор
   pubYear      String?      //Год публикации
-  // translators  ConnectionTranslatorText[]
-  translator   Translator?  @relation(fields: [translatorId], references: [id])  //Переводчик
-  translatorId String?      @db.ObjectId
+  translators  ConnectionAuthorText[]
   originalLang String?      //Язык оригинала
   pubPlace     String?      //Место публикации
   publisher    String?      //Издатель
@@ -61,7 +60,7 @@ model Text{
   texts        Part[]       //Сам тексты или его отрывки
 }
 
-model ConnectionWordrText{
+model ConnectionWordText{
   id           String    @id @default(auto()) @map("_id") @db.ObjectId
   word         Word      @relation(fields: [wordId], references: [id])
   wordId       String    @db.ObjectId
@@ -69,32 +68,13 @@ model ConnectionWordrText{
   textId       String    @db.ObjectId
 }
 
-/// Модель Переводчика с полями {id; name; photoUrl; texts; year; biography;}
-model Translator {
-  id        String    @id @default(auto()) @map("_id") @db.ObjectId
-  name      String    //ФИО
-  photoUrl  String?   //Ссылка на фото
-  // texts     ConnectionTranslatorText[]
-  texts     Text[]
-  year      String?   //Годы жизни
-  biography String?   //Биография
+model ConnectionAuthorText{
+  id           String    @id @default(auto()) @map("_id") @db.ObjectId
+  author       Author     @relation(fields: [authorId], references: [id])
+  authorId     String    @db.ObjectId
+  text         Text      @relation(fields: [textId], references: [id])
+  textId       String    @db.ObjectId
 }
-
-// model ConnectionAuthorText{
-//   id           String    @id @default(auto()) @map("_id") @db.ObjectId
-//   author       Autor     @relation(fields: [authorId], references: [id])
-//   authorId     String    @db.ObjectId
-//   text         Text      @relation(fields: [textId], references: [id])
-//   textId       String    @db.ObjectId
-// }
-
-// model ConnectionTranslatorText{
-//   id           String       @id @default(auto()) @map("_id") @db.ObjectId
-//   translator   Translator   @relation(fields: [translatorId], references: [id])
-//   translatorId String       @db.ObjectId
-//   text         Text         @relation(fields: [textId], references: [id])
-//   textId       String       @db.ObjectId
-// }
 
 /// Модель Части Текста с полями {id; parentText; translations}
 model Part{
@@ -111,6 +91,8 @@ model Translation{
   parentPartId  String    @db.ObjectId
   language      String
   text          String
+  translator    Author    @relation(fields: [translatorId], references: [id])
+  translatorId  String    @db.ObjectId
 }
 
 model User{

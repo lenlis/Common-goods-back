@@ -136,48 +136,82 @@ const TextController = {
     },
     
     createText: async (req, res) =>{
-        let name, year, biography, image, authorId, photoUrl, avatarName, author;
-        let wordRU, wordEng, meaningsRU, meaningsEN, letter, wordId, word;
+        let i, j;
+        let authorId, wordsId;
+        let title, titleRU, description, rubric, pubYear, translators;
+        let originalLang, pubPlace, publisher, catalogNum, storage, size, type;
+        let parts;
+        let part
+        /*
+        parts = [[[En,text,id], [ru,text,id]], [[En,text,id], [ru,text,id]]];
+        */
+        try{
+        wordsId = req.body.wordsId;
+        authorId = req.body.authorId;
+        title = req.body.title; 
+        titleRU = req.body.titleRU; 
+        description = req.body.description; 
+        rubric = req.body.rubric; 
+        pubYear = req.body.pubYear; 
+        translators = req.body.translators; 
+        originalLang = req.body.originalLang; 
+        pubPlace = req.body.pubPlace; 
+        publisher = req.body.publisher; 
+        catalogNum = req.body.catalogNum; 
+        storage = req.body.storage; 
+        size = req.body.size; 
+        type = req.body.type;
+        parts = req.body.parts;
+        }
+        catch(err){
+            res.status(500).json({ error: 'Ошибка получения параметров' });
+        }
 
         try{
-            if(!("authorId" in req.body)){
-                name = req.body.name;
-                year = req.body.year;
-                biography = req.body.biography;
-                const files = req.files;
-                if(files){
-                    image = files.image
+            
+            let text = await prisma.text.create({
+                data:{
+                    authorId,
+                    title, 
+                    titleRU, 
+                    description, 
+                    rubric, 
+                    pubYear, 
+                    originalLang, 
+                    pubPlace, 
+                    publisher, 
+                    catalogNum, 
+                    storage, 
+                    size, 
+                    type
                 }
-                photoUrl = '/images/authorPlaceHolder.png';
-                author = await AuthorService.createAuthorFunc(image, avatarName, name, photoUrl, year, biography);
-                authorId = author.authorId;
+            });
+            let id = text.id
+            for (i = 0; i < wordsId.length; i++){
+                await prisma.connectionWordText.create({data:{textId: id, wordId: wordsId[i]}})
             }
-            else{
-                authorId = req.body.authorId;
-            }
-
-            if(!("wordId" in req.body)){
-                wordRU = req.body.wordRU.trim();
-                wordEng = req.body.wordEng.trim();
-                meaningsRU = req.body.meaningsRU;
-                meaningsEN = req.body.meaningsEN;
-                letter = wordRU[0].toLowerCase();
-                word = await WordService.createWord(letter, wordRU, wordEng, meaningsRU, meaningsEN);
-                wordId = word.wordId;
-            }
-            else
-            {
-                wordId = req.body.wordId;
+            for (i = 0; i < translators.length; i++){
+                await prisma.connectionAuthorText.create({data:{textId: id, authorId: translators[i]}})
             }
 
+            for (i = 0; i < parts.length; i++){
+                part = await prisma.part.create({data:{parentTextId:id}});
+                for (j = 0; j < parts[i].length; j++){
+                    await prisma.translation.create({data:{
+                        parentPartId: part.id, 
+                        language: parts[i][j][0], 
+                        text: parts[i][j][1],
+                        translatorId: parts[i][j][2]
+                    }});
+                }
+            }
             
-            
-            
+            text = await prisma.text.findUnique({where: {id}});
 
 
             res.json(text);
         } catch (err) {
-            res.status(500).json({ error: 'Ошибка получения текстов по автору' });
+            res.status(500).json({ error: 'Ошибка создания текста'  });
         }
     }
 

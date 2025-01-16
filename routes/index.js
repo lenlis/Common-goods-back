@@ -19,8 +19,11 @@ router.post('/authors/', authMiddleware, adminMiddleware, AuthorController.creat
 router.put('/authors/', authMiddleware, adminMiddleware, AuthorController.updateAuthor)
 router.delete('/authors/', authMiddleware, adminMiddleware, AuthorController.deleteAuthor)
 
-router.get('/texts/?', TextController.getTextsSearch); // (wordId & authorId) || word(навание текста)
+router.get('/texts/?', TextController.getTextsSearch); // (wordId & authorId) || word(dнавание текста)
 router.get('/texts/:id', TextController.getTextsbyId);
+router.post('/texts/', authMiddleware, adminMiddleware, TextController.createText)
+// router.put('/texts/', authMiddleware, adminMiddleware, TextController.updateText)
+// router.delete('/texts/', authMiddleware, adminMiddleware, TextController.deleteText)
 
 router.post('/registration',
     body('email').isEmail(),
