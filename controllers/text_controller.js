@@ -142,9 +142,6 @@ const TextController = {
         let originalLang, pubPlace, publisher, catalogNum, storage, size, type;
         let parts;
         let part
-        /*
-        parts = [[[En,text,id], [ru,text,id]], [[En,text,id], [ru,text,id]]];
-        */
         try{
         wordsId = req.body.wordsId;
         authorId = req.body.authorId;
@@ -199,9 +196,9 @@ const TextController = {
                 for (j = 0; j < parts[i].length; j++){
                     await prisma.translation.create({data:{
                         parentPartId: part.id, 
-                        language: parts[i][j][0], 
-                        text: parts[i][j][1],
-                        translatorId: parts[i][j][2]
+                        language: parts[i][j].language, 
+                        text: parts[i][j].text,
+                        translatorId: parts[i][j].id
                     }});
                 }
             }
@@ -222,9 +219,6 @@ const TextController = {
         let originalLang, pubPlace, publisher, catalogNum, storage, size, type;
         let parts;
         let part
-        /*
-        parts = [[[En,text,id], [ru,text,id]], [[En,text,id], [ru,text,id]]];
-        */
         try{
         id = req.body.id;
         wordsId = req.body.wordsId;
@@ -298,9 +292,9 @@ const TextController = {
                 for (j = 0; j < parts[i].length; j++){
                     await prisma.translation.create({data:{
                         parentPartId: part.id, 
-                        language: parts[i][j][0], 
-                        text: parts[i][j][1],
-                        translatorId: parts[i][j][2]
+                        language: parts[i][j].language, 
+                        text: parts[i][j].text,
+                        translatorId: parts[i][j].id
                     }});
                 }
             }
