@@ -20,7 +20,11 @@ const TextController = {
                             }
                         },
                         author: true,
-                        translator: true,
+                        translators: {
+                            select:{
+                                author: true
+                            }
+                        },
                         texts: {
                             select:{
                                 translations: true
@@ -53,7 +57,11 @@ const TextController = {
                             }
                         },
                         author: true,
-                        translator: true,
+                        translators: {
+                            select:{
+                                author: true
+                            }
+                        },
                         texts: {
                             select:{
                                 translations: true
@@ -86,7 +94,11 @@ const TextController = {
                             }
                         },
                         author: true,
-                        translator: true,
+                        translators: {
+                            select:{
+                                author: true
+                            }
+                        },
                         texts: {
                             select:{
                                 translations: true
@@ -118,7 +130,11 @@ const TextController = {
                         }
                     },
                     author: true,
-                    translator: true,
+                    translators: {
+                        select:{
+                            author: true
+                        }
+                    },
                     texts: {
                         select:{
                             translations: true
