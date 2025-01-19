@@ -270,34 +270,25 @@ const TextController = {
             });
 
             text = await prisma.text.findUnique({where: {id}, include:{word: true, translators: true, texts:{select: {id: true, translations: true}}}});
-            console.log("1")
-            console.log(text)
             for (i = 0; i < text.word.length; i++){
-                console.log("11")
-                console.log(text.word[i])
                 let connectionId = text.word[i].id;
                 await prisma.connectionWordText.delete({where:{id: connectionId}})
             }
-            console.log("2")
             for (i = 0; i < text.translators.length; i++){
                 let connectionId = text.translators[i].id;
                 await prisma.connectionAuthorText.delete({where:{id: connectionId}})
             }
-            console.log("3")
             for (i = 0; i < text.texts.length; i++){
                 for (j = 0; j < text.texts[i].translations.length; j++){
-                    console.log("31")
                     let translationId = text.texts[i].translations[j].id;
                     await prisma.translation.delete({where:{id : translationId}});
                 }
                 let partId = text.texts[i].id;
                 part = await prisma.part.delete({where: {id : partId}});
             }
-            console.log("4")
             for (i = 0; i < wordsId.length; i++){
                 await prisma.connectionWordText.create({data:{textId: id, wordId: wordsId[i]}})
             }
-            console.log("5")
             for (i = 0; i < translators.length; i++){
                 await prisma.connectionAuthorText.create({data:{textId: id, authorId: translators[i]}})
             }
@@ -337,20 +328,15 @@ const TextController = {
         try{
             let text = await prisma.text.findUnique({where: {id}, include:{word: true, translators: true, texts:{select: {id: true, translations: true}}}});
             for (i = 0; i < text.word.length; i++){
-                console.log("11")
-                console.log(text.word[i])
                 let connectionId = text.word[i].id;
                 await prisma.connectionWordText.delete({where:{id: connectionId}})
             }
-            console.log("2")
             for (i = 0; i < text.translators.length; i++){
                 let connectionId = text.translators[i].id;
                 await prisma.connectionAuthorText.delete({where:{id: connectionId}})
             }
-            console.log("3")
             for (i = 0; i < text.texts.length; i++){
                 for (j = 0; j < text.texts[i].translations.length; j++){
-                    console.log("31")
                     let translationId = text.texts[i].translations[j].id;
                     await prisma.translation.delete({where:{id : translationId}});
                 }
