@@ -213,6 +213,157 @@ const TextController = {
         } catch (err) {
             res.status(500).json({ error: 'Ошибка создания текста'  });
         }
+    },
+
+    updateText: async (req, res) =>{
+        let i, j;
+        let authorId, wordsId, id;
+        let title, titleRU, description, rubric, pubYear, translators;
+        let originalLang, pubPlace, publisher, catalogNum, storage, size, type;
+        let parts;
+        let part
+        /*
+        parts = [[[En,text,id], [ru,text,id]], [[En,text,id], [ru,text,id]]];
+        */
+        try{
+        id = req.body.id;
+        wordsId = req.body.wordsId;
+        authorId = req.body.authorId;
+        title = req.body.title; 
+        titleRU = req.body.titleRU; 
+        description = req.body.description; 
+        rubric = req.body.rubric; 
+        pubYear = req.body.pubYear; 
+        translators = req.body.translators; 
+        originalLang = req.body.originalLang; 
+        pubPlace = req.body.pubPlace; 
+        publisher = req.body.publisher; 
+        catalogNum = req.body.catalogNum; 
+        storage = req.body.storage; 
+        size = req.body.size; 
+        type = req.body.type;
+        parts = req.body.parts;
+        }
+        catch(err){
+            res.status(500).json({ error: 'Ошибка получения параметров' });
+        }
+
+        try{
+            
+            let text = await prisma.text.update({
+                where: {id},
+                data:{
+                    authorId,
+                    title, 
+                    titleRU, 
+                    description, 
+                    rubric, 
+                    pubYear, 
+                    originalLang, 
+                    pubPlace, 
+                    publisher, 
+                    catalogNum, 
+                    storage, 
+                    size, 
+                    type
+                }
+            });
+
+            text = await prisma.text.findUnique({where: {id}, include:{word: true, translators: true, texts:{select: {id: true, translations: true}}}});
+            console.log("1")
+            console.log(text)
+            for (i = 0; i < text.word.length; i++){
+                console.log("11")
+                console.log(text.word[i])
+                let connectionId = text.word[i].id;
+                await prisma.connectionWordText.delete({where:{id: connectionId}})
+            }
+            console.log("2")
+            for (i = 0; i < text.translators.length; i++){
+                let connectionId = text.translators[i].id;
+                await prisma.connectionAuthorText.delete({where:{id: connectionId}})
+            }
+            console.log("3")
+            for (i = 0; i < text.texts.length; i++){
+                for (j = 0; j < text.texts[i].translations.length; j++){
+                    console.log("31")
+                    let translationId = text.texts[i].translations[j].id;
+                    await prisma.translation.delete({where:{id : translationId}});
+                }
+                let partId = text.texts[i].id;
+                part = await prisma.part.delete({where: {id : partId}});
+            }
+            console.log("4")
+            for (i = 0; i < wordsId.length; i++){
+                await prisma.connectionWordText.create({data:{textId: id, wordId: wordsId[i]}})
+            }
+            console.log("5")
+            for (i = 0; i < translators.length; i++){
+                await prisma.connectionAuthorText.create({data:{textId: id, authorId: translators[i]}})
+            }
+
+            for (i = 0; i < parts.length; i++){
+                part = await prisma.part.create({data:{parentTextId:id}});
+                for (j = 0; j < parts[i].length; j++){
+                    await prisma.translation.create({data:{
+                        parentPartId: part.id, 
+                        language: parts[i][j][0], 
+                        text: parts[i][j][1],
+                        translatorId: parts[i][j][2]
+                    }});
+                }
+            }
+            
+            text = await prisma.text.findUnique({where: {id}});
+
+
+            res.json(text);
+        } catch (err) {
+            res.status(500).json({ error: 'Ошибка создания текста'  });
+        }
+    },
+
+    deleteText: async (req, res) =>{
+        let i, j;
+        let id;
+        let part
+        try{
+        id = req.body.id;
+        }
+        catch(err){
+            res.status(500).json({ error: 'Ошибка получения параметров' });
+        }
+
+        try{
+            let text = await prisma.text.findUnique({where: {id}, include:{word: true, translators: true, texts:{select: {id: true, translations: true}}}});
+            for (i = 0; i < text.word.length; i++){
+                console.log("11")
+                console.log(text.word[i])
+                let connectionId = text.word[i].id;
+                await prisma.connectionWordText.delete({where:{id: connectionId}})
+            }
+            console.log("2")
+            for (i = 0; i < text.translators.length; i++){
+                let connectionId = text.translators[i].id;
+                await prisma.connectionAuthorText.delete({where:{id: connectionId}})
+            }
+            console.log("3")
+            for (i = 0; i < text.texts.length; i++){
+                for (j = 0; j < text.texts[i].translations.length; j++){
+                    console.log("31")
+                    let translationId = text.texts[i].translations[j].id;
+                    await prisma.translation.delete({where:{id : translationId}});
+                }
+                let partId = text.texts[i].id;
+                part = await prisma.part.delete({where: {id : partId}});
+            }
+
+            text = await prisma.text.delete({where: {id}});
+
+            res.json(text);
+        } catch (err) {
+            res.status(500).json({ error: 'Ошибка создания текста'  });
+        }
     }
 
 };
