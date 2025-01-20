@@ -6,6 +6,9 @@ module.exports = async function (req, res, next) {
         const {refreshToken} = req.cookies;
         const token = await TokenService.findToken(refreshToken);
         const user = await UserService.getUser(token.userId)
+        if(!user.activLink){
+            return next(ApiError.UnActiveError());
+        }
         if(!user.adminFlag){
             return next(ApiError.UnAdminError());
         }

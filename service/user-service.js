@@ -33,12 +33,11 @@ class UserService {
     }
 
     static async  activate(activationLink){
-        const user = await prisma.user.findUnique({where: {activationLink}});
+        const user = await prisma.user.findFirst({where: {activLink : activationLink}});
         if (!user) {
             throw ApiError.BadRequest('Неккоректная ссылка активации');
         }
-        user.isActivated = true;
-        await user.save();
+        await prisma.user.update({where:{id: user.id}, data:{activLink : activationLink}})
     }
 
     static async login(email, password){

@@ -16,6 +16,10 @@ class ApiError extends Error {
         return new ApiError(401, 'Пользователь не имеет прав администратора');
     }
 
+    static UnActiveError() {
+        return new ApiError(401, 'Почта пользователя не активирована');
+    }
+
     static BadRequest(message, errors = []) {
         return new ApiError(400, message, errors);
     }
