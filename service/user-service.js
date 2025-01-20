@@ -49,6 +49,12 @@ class UserService {
         if (!isPassEquals) {
             throw ApiError.BadRequest('Неверный пароль');
         }
+        if(!(user.isActivated)){
+            throw ApiError.UnActiveError();
+        }
+        if(!(user.adminFlag)){
+            throw ApiError.UnAdminError();
+        }
         const userDto = new UserDto(user);
         const tokens = TokenService.generateTokens({...userDto});
 
