@@ -14,7 +14,7 @@ const UserController =  {
             console.log(email);
             const userData = await UserService.registration(email, password);
             res.cookie('refreshToken', userData.refreshToken, {maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true})
-            return res.json(userData);
+            return res.json({result: "Пользователь зарегистрирован"});
         } catch (e) {
             next(e);
         }
