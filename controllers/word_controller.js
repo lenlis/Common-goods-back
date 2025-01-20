@@ -175,10 +175,14 @@ const WordController = {
     },
 
     deleteWord: async (req, res) =>{
-        let id;
+        let id, i;
         id = req.body.id;
         try{
-            const word = await prisma.word.delete({where:{id:id},});
+            let word = await prisma.word.findUnique({where:{id:id}, include:{texts:true}});
+            for(i = 0; i < word.texts.length; i++){
+                await prisma.ConnectionWordText.delete({where:{id:word.texts[i].id}});
+            }
+            word = await prisma.word.delete({where:{id:id}});
             res.json(word);
         } catch (error) {
             console.error("Error delete word:", error);

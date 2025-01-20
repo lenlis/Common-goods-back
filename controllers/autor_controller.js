@@ -172,10 +172,21 @@ const AuthorController = {
     },
 
     deleteAuthor: async (req, res) =>{
+        let i;
         let id;
+        let author
         id = req.body.id;
         try{
-            const author = await prisma.author.delete({where:{id:id},});
+            author = await prisma.author.findUnique({ where: { id }, include:{translations:true, translationConnections:true} });
+            for (i = 0; i < author.translations.length; i++){
+                await prisma.connectionAuthorText.delete({where:{ id: author.translations[i].id}})
+            }
+            for (i = 0; i < author.translationConnections.length; i++){
+                console.log(author.translationConnections[i]);
+                await prisma.translation.delete({where:{id: author.translationConnections[i].id}})
+            }
+        
+            author = await prisma.author.delete({where:{id}});
             // console.log(author);
             res.json(author);
         } catch (error) {
