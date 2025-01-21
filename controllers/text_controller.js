@@ -38,14 +38,16 @@ const TextController = {
             }
             if((authorId != undefined || wordId != undefined) && word == undefined){
                 texts = await prisma.text.findMany({
-                    where:{ OR:[
+                    where:{ AND:[
                         {
                             authorId: {equals: authorId},
                         },
                         {
                             word:{
                                 some:{
-                                    wordId:{equals:wordId},
+                                    word:{
+                                        id:{equals:wordId},
+                                    }
                                 }
                             }
                         },
@@ -53,6 +55,7 @@ const TextController = {
                     include:{
                         word:{
                             select:{
+                                wordId:true, 
                                 word: true
                             }
                         },
